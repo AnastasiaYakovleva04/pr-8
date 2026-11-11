@@ -1,0 +1,6 @@
+@yakovleva_pr8_HostAddress = http://localhost:5140
+
+GET {{yakovleva_pr8_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
