@@ -341,3 +341,4 @@ C:\Users\Админ\OneDrive\Документы\программки\c#\yakovlev
 C:\Users\Админ\OneDrive\Документы\программки\c#\yakovleva-pr8\yakovleva-pr8\obj\Debug\net8.0\yakovleva-pr8.pdb
 C:\Users\Админ\OneDrive\Документы\программки\c#\yakovleva-pr8\yakovleva-pr8\obj\Debug\net8.0\yakovleva-pr8.genruntimeconfig.cache
 C:\Users\Админ\OneDrive\Документы\программки\c#\yakovleva-pr8\yakovleva-pr8\obj\Debug\net8.0\ref\yakovleva-pr8.dll
+C:\Users\Админ\OneDrive\Документы\программки\c#\yakovleva-pr8\yakovleva-pr8\obj\Debug\net8.0\yakovleva-pr8.sourcelink.json

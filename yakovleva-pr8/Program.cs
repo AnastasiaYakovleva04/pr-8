@@ -1,10 +1,14 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Collections.Concurrent;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using yakovleva_pr8.Models;
-using Microsoft.OpenApi.Models;
-using Microsoft.EntityFrameworkCore;
+using yakovleva_pr8.Services;
+using Task = System.Threading.Tasks.Task;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +47,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<TokenService>();
 
 var key = builder.Configuration["Jwt:Key"] ?? throw new Exception("Не задан секретный ключ jwt");
 if (Encoding.UTF8.GetByteCount(key) < 32)
@@ -65,6 +70,24 @@ builder.Services
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
             ClockSkew = TimeSpan.Zero
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                var jti = context.Principal?.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
+                if (string.IsNullOrEmpty(jti))
+                {
+                    context.Fail("В JWT отсутствует jti");
+                    return;
+                }
+
+                var dbContext = context.HttpContext.RequestServices.GetRequiredService<TrpoPr8Context>();
+                var isRevoked = await dbContext.RevokedTokens.AnyAsync(x => x.Jti == jti);
+                if (isRevoked)
+                    context.Fail("JWT отозван");
+            }
         };
     });
 

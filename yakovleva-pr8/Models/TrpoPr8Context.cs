@@ -15,6 +15,10 @@ public partial class TrpoPr8Context : DbContext
     {
     }
 
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+
+    public virtual DbSet<RevokedToken> RevokedTokens { get; set; }
+
     public virtual DbSet<Task> Tasks { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
@@ -25,6 +29,23 @@ public partial class TrpoPr8Context : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.Property(e => e.TokenHash)
+                .HasMaxLength(64)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.User).WithMany(p => p.RefreshTokens)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_RefreshTokens_User");
+        });
+
+        modelBuilder.Entity<RevokedToken>(entity =>
+        {
+            entity.Property(e => e.Jti).HasMaxLength(64);
+        });
+
         modelBuilder.Entity<Task>(entity =>
         {
             entity.ToTable("Task");
